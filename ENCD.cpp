@@ -7,6 +7,98 @@
 
 #pragma comment(lib, "User32.lib")
 
+std::vector<uint16_t> framebuffer;
+int width =0;
+int height = 0;
+std::vector<uint8_t> rgb;
+
+
+void rgb565_to_rgb24(const std::vector<uint16_t>& src, std::vector<uint8_t>& dst, int width,int height)
+{
+    dst.resize(width * height * 3);
+
+    for (int i = 0; i < width * height; i++) {
+        uint16_t p = src[i];
+
+        uint8_t r = ((p >> 11) & 0x1F) << 3;
+        uint8_t g = ((p >> 5)  & 0x3F) << 2;
+        uint8_t b = (p & 0x1F) << 3;
+
+        dst[i * 3 + 0] = b;
+        dst[i * 3 + 1] = g;
+        dst[i * 3 + 2] = r;
+    }
+}
+
+void render_frame(HWND hwnd, const std::vector<uint8_t>& rgb, int width, int height)
+{
+    BITMAPINFO bmi = {};
+    bmi.bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+    bmi.bmiHeader.biWidth = width;
+    bmi.bmiHeader.biHeight = -height;
+    bmi.bmiHeader.biPlanes = 1;
+    bmi.bmiHeader.biBitCount = 24;
+    bmi.bmiHeader.biCompression = BI_RGB;
+
+    HDC hdc = GetDC(hwnd);
+
+    StretchDIBits(hdc,0, 0, width, height, 0, 0, width, height, rgb.data(), &bmi, DIB_RGB_COLORS, SRCCOPY);
+
+    ReleaseDC(hwnd, hdc);
+}
+
+
+
+uint16_t read_u16(const std::vector<uint8_t>& data, size_t& offset) {
+    uint16_t v = (data[offset] << 8) | data[offset + 1];
+    offset += 2;
+    return v;
+}
+
+void codec(std::vector<uint8_t>& data, std::vector<uint16_t>& framebuffer){
+    size_t offset = 0;
+
+    uint8_t frame_type = data[offset++];
+    width  = read_u16(data, offset);
+    height = read_u16(data, offset);
+
+    size_t pixel_count = width * height;
+
+    if (frame_type == 0x00) {
+        framebuffer.resize(pixel_count);
+        for (size_t i = 0; i < pixel_count; i++) {
+            framebuffer[i] = read_u16(data, offset);
+        }
+        return;
+    }
+
+    if (frame_type == 0x01) {
+
+        size_t cursor = 0;
+        uint16_t chunk_count = read_u16(data, offset);
+
+        for (int c = 0; c < chunk_count; c++) {
+            if (offset +1> data.size()) {
+                std::cerr << "Frame data corrupted\n";
+                return;
+            }
+            uint16_t skip = read_u16(data, offset);
+            cursor += skip;
+            uint16_t change = read_u16(data, offset);
+
+            for (int i = 0; i < change; i++) {
+                uint16_t delta = read_u16(data, offset);
+                if (cursor >= framebuffer.size()) {
+                    std::cerr << "Frame decode overflow\n";
+                    return;
+                }
+                framebuffer[cursor] ^= delta;
+                cursor++;
+            }
+        }
+    }
+}
+
 void GetDesktopResolution(int& horizontal, int& vertical)
 {
    RECT desktop;
@@ -108,6 +200,17 @@ std::vector<uint8_t> get_img_data(std::vector<int> index, int img, std::string f
 int main() {
     get_info("KGB");
     std::vector<int> mp = get_image_index("KGB");
-    std::vector<uint8_t> mp2 = get_img_data(mp, 1,"KGB");
-
+    int size = mp.size();
+    int h=0;
+    HWND hwnd =GetConsoleWindow();
+    while (size>0){
+        std::vector<uint8_t> mp2 = get_img_data(mp, h,"KGB");
+        codec(mp2, framebuffer);
+        rgb565_to_rgb24(framebuffer,rgb, width, height);
+        render_frame(hwnd, rgb, width, height);
+        h+=1;
+        size-=1;
+        Sleep(1000/24);
+    }
+    h=0;
 }
