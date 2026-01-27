@@ -15,12 +15,13 @@ Currently, the only thing that works is just the following :
 - Check the number of frames
 - Optimise the data within the file : homemade Delta frame methode + other solutions I will find (WIP)
 - Get a video Output from a file (most useful I'd say)
+- recording screen video feed
 
 
 ## *2) What do I plan to add ?:*
 I plan to add the followings
 
-- Video encoding : video feed to encoded file using my method
+- nothing more, if you have suggestions, send me a mail :)
 
 ## *3) What I won't implement ?*
 
@@ -37,6 +38,7 @@ For the moment, the only files i will Upload are :
 
 - ENCD.cpp : the masterpeace : the code that check for everything said in part 1) .
 - LOD.cpp : the file I use to encode raw HEX values to a file to try ENDC.cpp
-- KGB : the file i use as a test file
+- KGB : the file i use as a test file.
+- SCRD.cpp : used for screen recording, writes the KGB file.
 
 ### Last notice : for now its just a Windows programme (using User32.dll, and i might patch it later)
