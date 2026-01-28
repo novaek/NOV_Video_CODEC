@@ -1,4 +1,4 @@
-# NOV_Video_Encoder
+# NOV_Video_CODEC
 I wanted to make my own video codec (because why not ? )
 
 I present to you my own video encoder.
