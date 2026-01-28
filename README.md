@@ -41,4 +41,13 @@ For the moment, the only files i will Upload are :
 - KGB : the file i use as a test file.
 - SCRD.cpp : used for screen recording, writes the KGB file.
 
+## 5) to use it : 
+
+- Compile the .cpp files (i'm using `cl ENCD.cpp` and `cl SCRD.cpp` on windows).
+- Run SCRD.exe to record your screen (by feault it's on 24 frames/s and using 255 frames, you can modify the source code to recorde more)
+- Enter your filename and wait for the programme to exit.
+- Run ENCD.cpp, enter your filename and wait for the video feed (the windows page might take a while to open but it will).
+
+### ***Please note that the colours might not be as accurate as wanted, its not a featur but a bug that will be patched soon***
+
 ### Last notice : for now its just a Windows programme (using User32.dll, and i might patch it later)
