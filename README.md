@@ -46,7 +46,7 @@ For the moment, the only files i will Upload are :
 - Compile the .cpp files (i'm using `cl ENCD.cpp` and `cl SCRD.cpp` on windows).
 - Run SCRD.exe to record your screen (by feault it's on 24 frames/s and using 255 frames, you can modify the source code to recorde more)
 - Enter your filename and wait for the programme to exit.
-- Run ENCD.cpp, enter your filename and wait for the video feed (the windows page might take a while to open but it will).
+- Run ENCD.cpp, enter your filename and wait for the video feed (long timespan was optimised and patched).
 
 ### ***Please note that the colours might not be as accurate as wanted, its not a featur but a bug that will be patched soon***
 
